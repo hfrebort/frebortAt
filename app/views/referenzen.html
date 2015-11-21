@@ -1,0 +1,14 @@
+<div data-ng-controller="ProjectController">
+    <div class="row" data-ng-repeat="project in projects">
+        <div class="col-xs-5"><a href="{{project.url}}" target="_blank"><img
+                src="{{project.imageName}}" alt="{{project.namae}}" class="img-responsive img-thumbnail"/></a></div>
+        <div class="col-xs-7"><h3>{{project.name}}</h3>
+
+            <div><a href="{{project.url}}" target="_blank">{{project.url}}</a></div>
+            {{project.description}}
+            <br />
+            <br />
+            <em>{{project.slogan}}</em>
+        </div>
+    </div>
+</div>
