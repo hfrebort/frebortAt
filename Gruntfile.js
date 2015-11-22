@@ -18,11 +18,12 @@ module.exports = function (grunt) {
     ngtemplates: 'grunt-angular-templates',
     cdnify: 'grunt-google-cdn'
   });
-
+ 
   // Configurable paths for the application
   var appConfig = {
     app: require('./bower.json').appPath || 'app',
-    dist: 'dist'
+    dist: 'dist',
+	overrides: require('./bower.json').overrides
   };
 
   // Define the configuration for all the tasks
@@ -202,14 +203,14 @@ module.exports = function (grunt) {
           }
       }
     },
-
+	
     // Renames files for browser caching purposes
     filerev: {
       dist: {
         src: [
           '<%= yeoman.dist %>/scripts/{,*/}*.js',
           '<%= yeoman.dist %>/styles/{,*/}*.css',
-          '<%= yeoman.dist %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}',
+          //'<%= yeoman.dist %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}',
           '<%= yeoman.dist %>/styles/fonts/*'
         ]
       }
@@ -221,69 +222,27 @@ module.exports = function (grunt) {
     useminPrepare: {
       html: '<%= yeoman.app %>/index.html',
       options: {
-        dest: '<%= yeoman.dist %>',
-        flow: {
-          html: {
-            steps: {
-              js: ['concat', 'uglifyjs'],
-              css: ['cssmin']
-            },
-            post: {}
-          }
-        }
+        dest: '<%= yeoman.dist %>'
       }
     },
 
     // Performs rewrites based on filerev and the useminPrepare configuration
     usemin: {
-      html: ['<%= yeoman.dist %>/{,*/}*.html'],
-      css: ['<%= yeoman.dist %>/styles/{,*/}*.css'],
-      js: ['<%= yeoman.dist %>/scripts/{,*/}*.js'],
-      options: {
-        assetsDirs: [
-          '<%= yeoman.dist %>',
-          '<%= yeoman.dist %>/images',
-          '<%= yeoman.dist %>/styles'
-        ],
-        patterns: {
-          js: [[/(images\/[^''""]*\.(png|jpg|jpeg|gif|webp|svg))/g, 'Replacing references to images']]
-        }
-      }
-    },
-
-    // The following *-min tasks will produce minified files in the dist folder
-    // By default, your `index.html`'s <!-- Usemin block --> will take care of
-    // minification. These next options are pre-configured if you do not wish
-    // to use the Usemin blocks.
-    cssmin: {
-      dist: {
-        files: {
-          '<%= yeoman.dist %>/styles/main.css': [
-            '.tmp/styles/{,*/}*.css'
-          ]
-        }
-      }
-    },
-    uglify: {
-      dist: {
-        files: {
-          '<%= yeoman.dist %>/scripts/scripts.js': [
-            '<%= yeoman.dist %>/scripts/scripts.js'
-          ]
-        }
-      }
-    },
-    concat: {
-      dist: {}
-    },
+		html: ['<%= yeoman.dist %>/{,*/}*.html'],
+		css: ['<%= yeoman.dist %>/styles/{,*/}*.css'],
+		js: ['<%= yeoman.dist %>/scripts/{,*/}*.js'],
+		options: {
+			assetsDirs: ['<%= yeoman.dist %>']
+		}
+	},
 
     imagemin: {
-      dist: {
+      core: {
         files: [{
-          expand: true,
-          cwd: '<%= yeoman.app %>/images',
-          src: '{,*/}*.{png,jpg,jpeg,gif}',
-          dest: '<%= yeoman.dist %>/images'
+			expand: true,
+			cwd: '<%= yeoman.app %>/images',
+			src: ['**/*.{png,jpg,jpeg,gif}'],
+			dest: '<%= yeoman.dist %>/images'
         }]
       }
     },
@@ -302,15 +261,15 @@ module.exports = function (grunt) {
     htmlmin: {
       dist: {
         options: {
-          collapseWhitespace: true,
-          conservativeCollapse: true,
-          collapseBooleanAttributes: true,
-          removeCommentsFromCDATA: true
+          //collapseWhitespace: true,
+          //conservativeCollapse: true,
+          //collapseBooleanAttributes: true,
+          //removeCommentsFromCDATA: true
         },
         files: [{
           expand: true,
-          cwd: '<%= yeoman.dist %>',
-          src: ['*.html'],
+          cwd: '<%= yeoman.app %>',
+          src: ['*.html','views/*.html'],
           dest: '<%= yeoman.dist %>'
         }]
       }
@@ -360,9 +319,10 @@ module.exports = function (grunt) {
           src: [
             '*.{ico,png,txt}',
             '.htaccess',
-            '*.html',
-            'images/{,*/}*.{webp}',
-            'styles/fonts/{,*/}*.*'
+            //'images/{,*/}*.{webp}',
+			'images/**/*.{png,jpg,jpeg,gif}',
+            'styles/fonts/{,*/}*.*',
+            'index.html'
           ]
         }, {
           expand: true,
@@ -380,7 +340,10 @@ module.exports = function (grunt) {
         expand: true,
         cwd: '<%= yeoman.app %>/styles',
         dest: '.tmp/styles/',
-        src: '{,*/}*.css'
+        src: [
+			'{,*/}*.css',
+			'bower_components/**/*.css'
+		]
       }
     },
 
@@ -394,8 +357,9 @@ module.exports = function (grunt) {
       ],
       dist: [
         'copy:styles',
-        // 'imagemin',
-        'svgmin'
+        //'imagemin',
+        'svgmin',
+		'htmlmin'
       ]
     },
 
@@ -441,19 +405,19 @@ module.exports = function (grunt) {
   grunt.registerTask('build', [
     'clean:dist',
     'wiredep',
-    'useminPrepare',
+	'useminPrepare',
     'concurrent:dist',
     'autoprefixer',
     'ngtemplates',
     'concat',
     'ngAnnotate',
     'copy:dist',
-    'cdnify',
+    //'cdnify',
     'cssmin',
     'uglify',
     'filerev',
-    'usemin',
-    'htmlmin'
+    'htmlmin',
+    'usemin'
   ]);
 
   grunt.registerTask('default', [
