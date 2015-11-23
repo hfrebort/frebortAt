@@ -1,38 +1,47 @@
-<form name="contact_form">
-    <div class="row">
-        <h2>Kontaktieren Sie uns</h2>
+<div class="row">
+	<div class="col-xs-12">
+		<form name="contact_form">
+			<div class="row">
+				<div class="col-xs-8">
+					<h2>Kontaktieren Sie uns</h2>
 
-        <div class="col-xs-8">
             Haben Sie Fragen zu unseren Leistungen? <br/>
             F&uuml;llen Sie das folgende Formular aus, wir werden uns umgehend bei Ihnen melden.<br />
-            Oder rufen Sie uns an: +43 (0) 699  12 722 963<br/><br/>
-        </div>
-    </div>
+            Oder rufen Sie uns an: +43 (0) 699  12 722 963<br/>
+					<br/>
+				</div>
+			</div>
 
-    <div class="row" data-ng-show="">
-        <div class="col-xs-8">{{response}}</div>
-    </div>
+			<div class="row" data-ng-show="showThanks" data-ng-animate=" 'animate' ">
+				<div class="col-xs-8">
+				Wir bedanken uns f&uuml;r Ihre Anfrage und werden Sie sobald wie m&ouml;glich kontaktieren!
+				</div>
+			</div>
 
-    <div class="row">
-        <div class="col-xs-5">Name
-            <input data-ng-model="name" type="text" class="form-control" placeholder="Name" required="true"/>
-        </div>
-    </div>
+			<div data-ng-show="!showThanks">
+			<div class="row">
+				<div class="col-xs-5">Name
+					<input data-ng-model="requestMessage.name" type="text" class="form-control" placeholder="Name" required="true"/>
+				</div>
+			</div>
 
-    <div class="row">
-        <div class="col-xs-5">Email
-            <input data-ng-model="email" type="text" class="form-control" placeholder="email@email.com" required="true"/>
-        </div>
-    </div>
+			<div class="row">
+				<div class="col-xs-5">Email
+					<input data-ng-model="requestMessage.email" type="email" class="form-control" placeholder="email@email.com" required="true"/>
+				</div>
+			</div>
 
-    <div class="row">
-        <div class="col-xs-12">Nachricht
-            <textarea data-ng-model="message" class="form-control" rows="5" required="true"></textarea>
-        </div>
-    </div>
+			<div class="row">
+				<div class="col-xs-11">Nachricht
+					<textarea data-ng-model="requestMessage.text" class="form-control" rows="5" required="true"/>
+				</div>
+			</div>
 
-    <div>&nbsp;</div>
-    <div class="btn-group">
-        <button type="submit" class="btn btn-default" data-ng-click="sendContactMessage()">Senden</button>
-    </div>
-</form>
+			<div>&nbsp;</div>
+			<div class="btn-group">
+				<button type="submit" class="btn btn-default" data-ng-disabled="contact_form.$invalid" data-ng-click="addNew()">Senden</button>
+			</div>
+			</div>
+		</form>
+	</div>
+</div>

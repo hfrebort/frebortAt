@@ -30,34 +30,21 @@ angular.module('itnm', ['ngRoute', 'firebase'])
         redirectTo:'/'
       });
   })
-  .controller('ContactFormController', function ($scope, $http) {
-    $scope.resetContactRequest = function () {
-      $scope.name = '';
-      $scope.email = '';
-      $scope.message = '';
-      $scope.response = '';
-    };
-
-    (function() {
-      $scope.resetContactRequest();
-    })();
-
-    $scope.sendContactMessage = function () {
-      var contactRequest = { contactRequest: [$scope.name, $scope.email, $scope.message]};
-      $http.post('/kontakt', contactRequest)
-        .success(function (data) {
-          console.info("kontakt sent: " + data);
-          $scope.success = true;
-          $scope.resetContactRequest();
-          $scope.response = 'Danke f&uuml;r Ihre Nachricht.';
-        })
-        .error(function (data, error) {
-          $scope.success = false;
-          $scope.resetContactRequest();
-          $scope.response = 'Die Nachricht konnte leider nicht versandt werden. Bitte versuchen Sie es zu einem sp&auml;tern Zeitpunkt nochmals.';
-          console.info("kontakt not sent " + error);
-        });
-    };
+  .controller('ContactFormController', function ($scope, $timeout, $firebaseArray) {
+	var fbReference = 'https://popping-fire-9893.firebaseio.com/frebortAtMessages';
+	var fbInstance = new Firebase(fbReference);
+	$scope.messages = $firebaseArray(fbInstance);
+	$scope.requestMessage = {};
+	
+	$scope.addNew = function () {
+	  $scope.messages.$add($scope.requestMessage).then(function () {
+	  $scope.requestMessage = {};
+	  $scope.showThanks = true;
+		$timeout(function() {
+		  $scope.showThanks = false;
+		}, 5000);
+	  });
+	};
   })
   .controller('ProjectController', function ($scope) {
     $scope.projects = [
@@ -68,23 +55,5 @@ angular.module('itnm', ['ngRoute', 'firebase'])
       {url: 'http://www.schneeservicewien.at', name:'Schneeservice Wien West', description: 'Webauftritt des Unternehmens Schneeservice Wien West', imageName: 'images/referenzen/schneeservice.jpg', slogan: 'Wo wir sind, wächst kein Schnee mehr!'},
       {url: '', name:'Katona Service', description: 'Webauftritt von Katona Service', imageName: 'images/referenzen/katonaservice.jpg'},
     ];
-  })
-  .directive('hfContact', function ($firebaseArray) {
-    return {
-      restrict : 'A',
-      replace : true,
-      templateUrl : 'template/hfContact.html',
-      link : function (scope, attributes) {
-        var fbReference = attributes.url || 'https://popping-fire-9893.firebaseio.com/frebortAtMessages';
-        var fbInstance = new Firebase(fbReference);
-        scope.messages = $firebaseArray(fbInstance);
-        scope.requestMessage = {};
-        scope.addNew = function () {
-          scope.messages.$add(scope.requestMessage).then(function () {
-            scope.requestMessage = {};
-          });
-        };
-      }
-    };
   });
   
